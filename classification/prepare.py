@@ -14,7 +14,7 @@ def iris_rename(df):
 def iris_label_encoder(df):
     species = LabelEncoder()
     species.fit(df.species)
-    df['species_transformed'] = species.transform(df.species)
+    df['species_encode'] = species.transform(df.species)
     
 def prep_iris(df):
     drop_columns(df)
@@ -38,7 +38,7 @@ def titanic_drop(df):
 def titanic_encode_embarked(df):
     embarked_t = LabelEncoder()
     embarked_t.fit(df.embarked)
-    df['embarked_transform'] = embarked_t.transform(df.embarked)
+    df['embarked_encode'] = embarked_t.transform(df.embarked)
     print('encode')
     return df
 
@@ -64,6 +64,17 @@ def prep_titanic(df):
     titanic_fillna(df)
     titanic_drop(df)
     titanic_encode_embarked(df)
-    titanic_split(df)
-    titanic_min_max_age_fare(train)
+    # titanic_split(df)
+    # titanic_min_max_age_fare(train)
+    # global train, test, X_train, X_test, y_train, y_test, X, y
+    # X = df.drop(['passenger_id', 'survived'], axis=1)
+    # y = df[['survived']]
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.80, random_state=10)
+    # train = pd.concat((X_train, y_train), axis=1)
+    # test = pd.concat((X_test, y_test), axis=1)
+    # print('split')
+    # scaler = MinMaxScaler()
+    # scaler.fit(train[['fare', 'age']])
+    # train[['fare', 'age']] = scaler.transform(train[['fare', 'age']])
+    # print('standard')
     return df
