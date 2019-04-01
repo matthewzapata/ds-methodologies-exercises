@@ -4,3 +4,4 @@ env.py
 *.csv
 *env.py
 new.py
+iris_decision_tree*
