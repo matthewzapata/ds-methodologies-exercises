@@ -160,6 +160,9 @@ def how_many_outliers(series, criteria='iqr'):
 
 # Write a function that accepts the zillow data frame and removes the outliers. 
 # You should make a decision and document how you will remove outliers.
+
+# consider using a describe DF to capture the upper and lower limits at the 
+# beginning of the function instead of having the limits change.
 def detect_and_remove_outliers(df):
     """Identifies any outliers in a DataFrame (IQR) and gives option to remove them."""
     cols = df.select_dtypes('number')
