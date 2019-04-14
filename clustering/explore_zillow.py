@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import ttest_ind, chi2_contingency
 from sklearn.model_selection import train_test_split
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
+from sklearn.linear_model import LinearRegression, ElasticNet, Ridge, Lasso
+from sklearn.feature_selection import f_regression, RFE
+
 
 # Write a function that will take, as input, a dataframe and a list containing the column names of 
 # all ordered numeric variables. It will output, through subplots, a pairplot, a heatmap, and 1 other 
@@ -99,3 +105,98 @@ def split_it(df, training_size=.7, random=123, strat=None):
     print('Parameters are df, train_size, random_state, and stratify')
     print('Returns train, test')
     return train, test
+
+
+def gradient_boosting_regression(X, y):
+    gb = GradientBoostingRegressor(random_state=123)
+    gb.fit(X, y)
+    p = gb.predict(X)
+    s = gb.score(X, y)
+    mse_gb = mean_squared_error(y, p)
+    print(f'gradient boost r2 is: {s}')
+    print(f'gradient boost mse is: {mse_gb}')
+    return mse_gb
+
+def random_forest_regression(X, y, max_depth=2):
+    forest = RandomForestRegressor(random_state=123, max_depth=max_depth)
+    forest.fit(X, y)
+    p = forest.predict(X)
+    s = forest.score(X, y)
+    mse_rf = mean_squared_error(y, p)
+    print(f'random forest regression r2 score is: {s}')
+    print(f'random forest regression mse is: {mse_rf}')
+    return mse_rf
+
+def gb_rf_regressions(X, y, max_depth=2):
+    gb = gradient_boosting_regression(X, y)
+    rf = random_forest_regression(X, y, max_depth=max_depth)
+    if gb < rf:
+        print('Gradient Boosting performed better.')
+    elif rf < gb:
+        print('Random Foret performed better.')
+
+
+def recursive_feature_elimination(X, y, model_object, n_features):
+    """Finds the top n-features to use in specified model. Returns ranked features as a DF."""
+    model = model_object
+    selector = RFE(model, n_features)
+    selector = selector.fit(X, y)
+    columns = X.columns
+    rankings = pd.DataFrame(list(zip(selector.ranking_, 
+                                    columns)), 
+                            columns=['rank', 'variable'])
+    print(rankings.sort_values(by='rank').head(n_features))
+    return rankings.sort_values(by='rank')
+
+def linear_regression(X, y):
+    lm = LinearRegression()
+    lm.fit(X, y)
+    p = lm.predict(X)
+    r2 = r2_score(y, p)
+    mse_lm = mean_squared_error(y, p)
+    print(f'linear regression r2 score is: {r2}')
+    print(f'linear regression mse is: {mse_lm}')
+    return mse_lm
+
+def ridge_regression(X, y):
+    ridge = Ridge(random_state=123)
+    ridge.fit(X, y)
+    p = ridge.predict(X)
+    r2 = r2_score(y, p)
+    mse_rr = mean_squared_error(y, p)
+    print(f'ridge regression r2 score is: {r2}')
+    print(f'ridge regression mse is: {mse_rr}')
+    return mse_rr
+
+def elastic_net_regression(X, y):
+    en = ElasticNet(random_state=123)
+    en.fit(X, y)
+    p = en.predict(X)
+    r2 = r2_score(y, p)
+    mse_en = mean_squared_error(y, p)
+    print(f'elastic net regression r2 score is: {r2}')
+    print(f'elastic net regression mse is: {mse_en}')
+    return mse_en
+
+def lasso_regression(X, y):
+    lasso = Lasso(random_state=123)
+    lasso.fit(X, y)
+    p = lasso.predict(X)
+    r2 = r2_score(y, p)
+    mse_lr = mean_squared_error(y, p)
+    print(f'lasso regression r2 score is: {r2}')
+    print(f'lasso regression mse is: {mse_lr}')
+    return mse_lr
+
+def linear_models(X, y):
+    mse_lm = linear_regression(X, y)
+    print('\n')
+    mse_rr = ridge_regression(X, y)
+    print('\n')
+    mse_en = elastic_net_regression(X, y)
+    print('\n')
+    mse_lr = lasso_regression(X, y)
+    print('\n')
+    mse_list = {'Ridge regression' : mse_rr, 'Lasso regression' : mse_lr, 'Elastic net' : mse_en, 'Linear regression' : mse_lm}
+    best = min(mse_list, key=mse_list.get)
+    print(f'{best} was the best model.')
