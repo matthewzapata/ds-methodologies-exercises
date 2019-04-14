@@ -7,13 +7,14 @@ from sklearn.linear_model import LinearRegression
     # property land use description that makes sense for a single unit.
 def only_singles(df):
     """Returns a DF with only single unit properties."""
-    return df[((df['propertylandusedesc'] == 'Single Family Residential') |
+    return df[(df['unitcnt'] == 1) & ((df['bathroomcnt'] > 0) | (df['bedroomcnt'] > 0)) & 
+        ((df['propertylandusedesc'] == 'Single Family Residential') |
      (df['propertylandusedesc'] == 'Condominium') |
       (df['propertylandusedesc'] == 'Mobile Home') |
        (df['propertylandusedesc'] == 'Townhouse') |
         (df['propertylandusedesc'] == 'Residential General') |
-         (df['propertylandusedesc'] == 'Commercial/Office/Residential Mixed Used'))
-     & (df['unitcnt'] == 1) & ((df['bathroomcnt'] > 0) | (df['bedroomcnt'] > 0))]
+         (df['propertylandusedesc'] == 'Commercial/Office/Residential Mixed Used'))]
+          
 
 # only include properties that include a latitude and longitude value.
 def lat_lon(df):

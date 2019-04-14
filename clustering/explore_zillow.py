@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, chi2_contingency
+from sklearn.model_selection import train_test_split
 
 # Write a function that will take, as input, a dataframe and a list containing the column names of 
 # all ordered numeric variables. It will output, through subplots, a pairplot, a heatmap, and 1 other 
@@ -63,11 +64,38 @@ def print_ttest_results(group_1, group_2, alpha=0.05):
 
 
 
-# Because there are many discrete variables, you can the chi-squared test to test proportions. 
+# Because there are many discrete variables, you can the use chi-squared test to test proportions. 
 # If you split logerror into quartiles, you can expect the overall probability of falling into a single quartile to be 25%. 
 # Now, add another variable, like bedrooms (and you can bin these if you want fewer distinct values) and 
 # compare the probabilities of bedrooms with logerror quartiles. 
 # See the example in the Classification_Project notebook we reviewed on how to implement chi-squared.
+def print_chi_test_results(cat_1, cat_2, alpha=0.05):
+    num_unique_1 = len(cat_1.unique())
+    num_unique_2 = len(cat_2.unique())
+    if num_unique_1 > 8:
+        bins_1 = []
+        for i in [0, .25, .50, .75, 1]:
+            bins_1.append(cat_1.quantile(i))
+        cat_1 = pd.cut(cat_1, bins_1, include_lowest=True)
+        print(f'Category 1 was binned. Here are the bins {bins_1}')
+    if num_unique_2 > 8:
+        bins_2 = []
+        for i in [0, .25, .50, .75, 1]:
+            bins_2.append(cat_2.quantile(i))
+        cat_2 = pd.cut(cat_2, bins_2, include_lowest=True)
+        print(f'Category 2 was binned. Here are the bins {bins_2}')
+    chi = chi2_contingency(pd.crosstab(cat_1, cat_2))
+    print(f'The p-value is: {chi[1]}')
+    if chi[1] < .05:
+        print('There is a relationship between the variables.')
+    else:
+        print('The variables are independent.')
 
 
 
+def split_it(df, training_size=.7, random=123, strat=None):
+    """Train test split. Returns train_df and test_df."""
+    train, test = train_test_split(df, train_size=training_size, random_state=random, stratify=strat)
+    print('Parameters are df, train_size, random_state, and stratify')
+    print('Returns train, test')
+    return train, test
