@@ -8,6 +8,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
 from sklearn.linear_model import LinearRegression, ElasticNet, Ridge, Lasso
 from sklearn.feature_selection import f_regression, RFE
+from sklearn.preprocessing import MinMaxScaler
 
 
 # Write a function that will take, as input, a dataframe and a list containing the column names of 
@@ -115,7 +116,7 @@ def gradient_boosting_regression(X, y):
     mse_gb = mean_squared_error(y, p)
     print(f'gradient boost r2 is: {s}')
     print(f'gradient boost mse is: {mse_gb}')
-    return mse_gb
+    return gb, mse_gb
 
 def random_forest_regression(X, y, max_depth=2):
     forest = RandomForestRegressor(random_state=123, max_depth=max_depth)
@@ -125,15 +126,18 @@ def random_forest_regression(X, y, max_depth=2):
     mse_rf = mean_squared_error(y, p)
     print(f'random forest regression r2 score is: {s}')
     print(f'random forest regression mse is: {mse_rf}')
-    return mse_rf
+    return forest, mse_rf
 
 def gb_rf_regressions(X, y, max_depth=2):
-    gb = gradient_boosting_regression(X, y)
-    rf = random_forest_regression(X, y, max_depth=max_depth)
-    if gb < rf:
+    gb, mse_gb = gradient_boosting_regression(X, y)
+    forest, mse_rf = random_forest_regression(X, y, max_depth=max_depth)
+    if mse_gb < mse_rf:
         print('Gradient Boosting performed better.')
-    elif rf < gb:
+        return gb
+    elif mse_rf < mse_gb:
         print('Random Foret performed better.')
+        return forest
+    
 
 
 def recursive_feature_elimination(X, y, model_object, n_features):
@@ -156,7 +160,7 @@ def linear_regression(X, y):
     mse_lm = mean_squared_error(y, p)
     print(f'linear regression r2 score is: {r2}')
     print(f'linear regression mse is: {mse_lm}')
-    return mse_lm
+    return lm, mse_lm
 
 def ridge_regression(X, y):
     ridge = Ridge(random_state=123)
@@ -166,7 +170,7 @@ def ridge_regression(X, y):
     mse_rr = mean_squared_error(y, p)
     print(f'ridge regression r2 score is: {r2}')
     print(f'ridge regression mse is: {mse_rr}')
-    return mse_rr
+    return ridge, mse_rr
 
 def elastic_net_regression(X, y):
     en = ElasticNet(random_state=123)
@@ -176,7 +180,7 @@ def elastic_net_regression(X, y):
     mse_en = mean_squared_error(y, p)
     print(f'elastic net regression r2 score is: {r2}')
     print(f'elastic net regression mse is: {mse_en}')
-    return mse_en
+    return en, mse_en
 
 def lasso_regression(X, y):
     lasso = Lasso(random_state=123)
@@ -186,17 +190,28 @@ def lasso_regression(X, y):
     mse_lr = mean_squared_error(y, p)
     print(f'lasso regression r2 score is: {r2}')
     print(f'lasso regression mse is: {mse_lr}')
-    return mse_lr
+    return lasso, mse_lr
 
 def linear_models(X, y):
-    mse_lm = linear_regression(X, y)
+    lm, mse_lm = linear_regression(X, y)
     print('\n')
-    mse_rr = ridge_regression(X, y)
+    ridge, mse_rr = ridge_regression(X, y)
     print('\n')
-    mse_en = elastic_net_regression(X, y)
+    en, mse_en = elastic_net_regression(X, y)
     print('\n')
-    mse_lr = lasso_regression(X, y)
+    lasso, mse_lr = lasso_regression(X, y)
     print('\n')
     mse_list = {'Ridge regression' : mse_rr, 'Lasso regression' : mse_lr, 'Elastic net' : mse_en, 'Linear regression' : mse_lm}
     best = min(mse_list, key=mse_list.get)
     print(f'{best} was the best model.')
+    return lm, ridge, en, lasso
+
+
+def min_max(train, list_of_what_to_standardize):
+    """Min-max normalization that returns a train_df and the scaler used"""
+    scaler = MinMaxScaler()
+    scaler.fit(train[list_of_what_to_standardize])
+    train[list_of_what_to_standardize] = scaler.transform(train[list_of_what_to_standardize])
+    print('Parameters are a training df and a list of what columns to standardize.')
+    print('Returns the normalized training df and the scaler for scaling the test set.')
+    return train, scaler
