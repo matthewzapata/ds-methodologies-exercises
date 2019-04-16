@@ -16,6 +16,7 @@ from sklearn.preprocessing import MinMaxScaler
 # type of plot that will loop through and plot each combination of numeric variables 
 # (an x and a y, combination order doesn't matter here!).
 def pair_heat_(df):
+    """Plots pairplot and heatmap of correlations."""
     plt.figure(figsize=(20,20))
     sns.pairplot(df)
     plt.show()
@@ -35,6 +36,7 @@ def relplot_TwoNum_OneCat(df, x, y, hue):
 # Write a function that will take, as input, a dataframe, a categorical column name, and a list of numeric column names. 
 # It will return a series of subplots: a swarmplot for each numeric column. X will be the categorical variable.
 def swarm_subs(df, cat, list_of_num_columns):
+    """Returns a series of subplots with swarmplots of a categorical variable and listed numerical variables."""
     n = len(list_of_num_columns)
     for i, column in enumerate(list_of_num_columns):
         plt.figure(figsize=(15, 15))
@@ -45,7 +47,8 @@ def swarm_subs(df, cat, list_of_num_columns):
 
 # Write a function that will take a dataframe and a list of categorical columns to plot each combination of 
 # variables in the chart type of your choice.
-def cat_distributions(df, list_of_cat_columns, num_variable):
+def cat_boxplots(df, list_of_cat_columns, num_variable):
+    """Returns boxplots of listed categorical variables against a numeric variable."""
     for column in list_of_cat_columns:
         if len(df[column].unique()) > 6:
             binned_column = pd.cut(df[column], bins=5)
@@ -61,6 +64,7 @@ def cat_distributions(df, list_of_cat_columns, num_variable):
 # Is logerror significantly different for properties that are delinquent on their taxes vs those that are not? 
 # Is logerror significantly different for properties built prior to 1960 than those built later than 2000?
 def print_ttest_results(group_1, group_2, alpha=0.05):
+    """Prints t-test results."""
     ttest = ttest_ind(group_1, group_2)
     print(f'The p-value is : {ttest[1]}')
     if ttest[1] < alpha:
@@ -77,6 +81,7 @@ def print_ttest_results(group_1, group_2, alpha=0.05):
 # compare the probabilities of bedrooms with logerror quartiles. 
 # See the example in the Classification_Project notebook we reviewed on how to implement chi-squared.
 def print_chi_test_results(cat_1, cat_2, alpha=0.05):
+    """Prints chi2 test results."""
     num_unique_1 = len(cat_1.unique())
     num_unique_2 = len(cat_2.unique())
     if num_unique_1 > 8:
