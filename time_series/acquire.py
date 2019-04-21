@@ -28,30 +28,28 @@ def get_stores():
 
 def get_sales():
     url = '/api/v1/sales'
-response = requests.get('https://python.zach.lol' + url)
-data = response.json()
-max_pages = data['payload']['max_page']
-url = data['payload']['next_page']
-all_data = {}
-all_data['page_0'] = pd.DataFrame(data['payload']['sales'])
-page = data['payload']['page']
-print(page)
-
-while data['payload']['page'] < max_pages:
-    if url == None:
-        break
     response = requests.get('https://python.zach.lol' + url)
     data = response.json()
-    page = data['payload']['page']
-    print(page)
+    max_pages = data['payload']['max_page']
     url = data['payload']['next_page']
-    all_data[f'page {page}'] = pd.DataFrame(data['payload']['sales'])
-    if page%10 == 0:
-        print(f'page {page}')
-    
-sales = pd.concat(all_data)
-sales.reset_index(inplace=True, drop=True)
-return sales
+    all_data = {}
+    all_data['page_0'] = pd.DataFrame(data['payload']['sales'])
+    page = data['payload']['page']
+
+    while data['payload']['page'] < max_pages:
+        if url == None:
+            break
+        response = requests.get('https://python.zach.lol' + url)
+        data = response.json()
+        page = data['payload']['page']
+        url = data['payload']['next_page']
+        all_data[f'page {page}'] = pd.DataFrame(data['payload']['sales'])
+        if page%10 == 0:
+            print(f'page {page}')
+        
+    sales = pd.concat(all_data)
+    sales.reset_index(inplace=True, drop=True)
+    return sales
 
 def get_heb_data():
     items = get_items()
