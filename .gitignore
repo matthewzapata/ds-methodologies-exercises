@@ -17,3 +17,8 @@ sa311
 *.json
 *.csv
 *warmup*
+nlp/acquire.ipynb
+nlp/prep_lecture.ipynb
+nlp/prepare.ipynb
+time_series/Untitled.ipynb
+time_series/test.xlsx
