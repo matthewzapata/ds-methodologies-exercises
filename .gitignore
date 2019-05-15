@@ -14,3 +14,6 @@ my_cases_parquet
 my_depts
 my_depts_parquet
 sa311
+*.json
+*.csv
+*warmup*
